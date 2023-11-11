@@ -1,0 +1,75 @@
+<div>
+  <button class="btn btn-primary add-button" (click)="addTire()">Add Tire</button>
+</div>
+<div class="d-flex flex-wrap mt-4">
+  <div *ngFor="let tire of tires; let i = index" class="m-2">
+    <div class="card" style="width: 18rem;">
+      <div class="card-body">
+        <span class="px-2 py-1 bg-primary text-white rounded">{{ i + 1 }}</span>
+        <p class="card-text">{{tire.tireId}}</p>
+
+        <div *ngIf="displayStatus[i][0]" style="display: flex; align-items: center;">
+          <input type="checkbox"
+                 [checked]="getTaskStatus(i, TaskType.blowingTire)"
+                 (change)="updateTaskField(i, TaskType.blowingTire, 'isDone'); updateDisplayStatus(i)"
+                 [disabled]="disabledStatus[i][0]"
+          >
+          <label style="margin-right: 10px;">Is Tire Blown</label> <!-- Added some spacing -->
+
+          <!-- The author label will only appear when the checkbox is checked -->
+          <label style="margin-right: 10px;" *ngIf="getTaskStatus(i, TaskType.blowingTire)">{{tire.tasks![0].whoDidIt}}</label>
+          <label *ngIf="getTaskStatus(i, TaskType.blowingTire)">time: {{formatDate(tire.tasks![0].whenWasItDone!)}}</label>
+        </div>
+
+
+        <div *ngIf="displayStatus[i][1]">
+          <input type="checkbox" [checked]="getTaskStatus(i, TaskType.checkingTire)" [disabled]="disabledStatus[i][1]"
+                 (change)="updateTaskField(i, TaskType.checkingTire, 'isDone'); updateDisplayStatus(i)"
+          >
+          <label style="margin-right: 10px;">Is Tire Checked</label>
+
+          <label style="margin-right: 10px;" *ngIf="getTaskStatus(i, TaskType.checkingTire)">{{tire.tasks![1].whoDidIt}}</label>
+          <label *ngIf="getTaskStatus(i, TaskType.checkingTire)">time: {{formatDate(tire.tasks![1].whenWasItDone!)}}</label>
+        </div>
+
+        <div *ngIf="displayStatus[i][2]">
+          <input type="checkbox" [checked]="getTaskStatus(i, TaskType.removingOldTread)" [disabled]="disabledStatus[i][2]"
+                 (change)="updateTaskField(i, TaskType.removingOldTread, 'isDone'); updateDisplayStatus(i)"
+          >
+          <label style="margin-right: 10px;">Is Old Tread Removed</label>
+
+          <label style="margin-right: 10px;" *ngIf="getTaskStatus(i, TaskType.removingOldTread)">{{tire.tasks![2].whoDidIt}}</label>
+          <label *ngIf="getTaskStatus(i, TaskType.removingOldTread)">time: {{formatDate(tire.tasks![2].whenWasItDone!)}}</label>
+        </div>
+
+        <div>
+          <input type="text" placeholder="Enter Lot Number" [(ngModel)]="tires[i].lotNumber" (keyup.enter)="onLotNumberSubmitted(i, $event)">
+          <label>Enter Lot Number</label>
+        </div>
+
+        <div>
+          <label>Lot Number: {{ updatedLotNumbers[i] }}</label>
+        </div>
+
+        <div *ngIf="tire.isTireReady">
+          <p class="text-success">The tire is ready!</p>
+        </div>
+
+        <button
+          [class.btn-outline-danger]="!tire.isTireScrapped"
+          [class.btn-danger]="tire.isTireScrapped"
+          class="btn position-absolute bottom-0 end-0 m-3"
+          (click)="updateTireField(i, 'isTireScrapped')">
+          For Scrap
+        </button>
+
+        <label
+          *ngIf="tire.isTireScrapped"
+          [ngStyle]="{'font-size': 'larger', 'color': 'red'}">
+          Tire scrapped!
+        </label>
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,138 @@
+<div class="container text-center mt-2">
+  <h1>Welcome</h1>
+
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-6">
+
+      <!-- Alert for invalid login -->
+      <div class="alert alert-warning" *ngIf='invalidLogin'>{{errorMessage}}</div>
+
+      <!-- Buttons for toggling between Sign In and Sign Up -->
+      <div class="btn-group" role="group">
+        <button (click)="showSignIn=true; showSignUp=false" class="btn btn-primary">Sign In</button>
+        <button (click)="showSignIn=false; showSignUp=true" class="btn btn-primary">Sign Up</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <form *ngIf="showSignIn" (submit)="handleJWTAuthLogin()" class="border-rounded p-4 mt-3">
+        <div class="mb-3">
+          <label for="username" class="form-label">User Name</label>
+          <input type="text" id="username" name="username" [(ngModel)]="username" class="form-control oval-input"
+                 required pattern="[a-zA-Z0-9.-]+">
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" id="password" name="password" [(ngModel)]="password" class="form-control oval-input"
+                 required>
+        </div>
+        <button type="submit" class="btn btn-success btn-block oval-button">Login</button>
+      </form>
+
+      <!-- Sign Up Form -->
+      <form *ngIf="showSignUp" #signUpForm="ngForm" (ngSubmit)="handleSignUp(signUpForm)"
+            class="border-rounded p-4 mt-3"
+            novalidate>
+        <div class="mb-3">
+          <label for="personName" class="form-label">First Name</label>
+          <input type="text" id="personName" name="name" [(ngModel)]="personName" class="form-control" required
+                 #nameInput="ngModel" [minlength]="AppConstants.MIN_NAME_LENGTH"
+                 [maxlength]="AppConstants.MAX_NAME_LENGTH">
+          <div *ngIf="submitted && nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+               class="alert alert-danger">
+            First name is required and must be between {{ AppConstants.MIN_NAME_LENGTH }}
+            and {{ AppConstants.MAX_NAME_LENGTH}} characters.
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="newUsername" class="form-label">User Name</label>
+          <input type="text" id="newUsername" name="username" [(ngModel)]="newUsername" class="form-control" required
+                 #usernameInput="ngModel" [minlength]="AppConstants.MIN_USERNAME_LENGTH"
+                 [maxlength]="AppConstants.MAX_USERNAME_LENGTH" pattern="[a-zA-Z0-9.-]+">
+          <div *ngIf="submitted && usernameInput.invalid && (usernameInput.dirty || usernameInput.touched)">
+            <div *ngIf="usernameInput.errors?.['required']" class="alert alert-danger">
+              Username is required.
+            </div>
+            <div *ngIf="usernameInput.errors?.['minlength']" class="alert alert-danger">
+              Username must be between {{ AppConstants.MIN_USERNAME_LENGTH }} and {{ AppConstants.MAX_USERNAME_LENGTH }}
+              characters.
+            </div>
+            <div *ngIf="usernameInput.errors?.['pattern']" class="alert alert-danger">
+              Username must contain only letters, numbers, periods, and hyphens.
+            </div>
+          </div>
+        </div>
+
+
+        <div class="mb-3">
+          <label for="newPassword" class="form-label">Password</label>
+          <input type="password" id="newPassword" name="password" [(ngModel)]="newPassword" class="form-control"
+                 required #passwordInput="ngModel" [minlength]="AppConstants.MIN_PASSWORD_LENGTH"
+                 [maxlength]="AppConstants.MAX_PASSWORD_LENGTH" pattern="[\w!@#$%^&*()-+=]+">
+          <div *ngIf="submitted && passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)">
+            <div *ngIf="passwordInput.errors?.['required']" class="alert alert-danger">
+              Password is required.
+            </div>
+            <div *ngIf="passwordInput.errors?.['minlength']" class="alert alert-danger">
+              Password must be between {{ AppConstants.MIN_PASSWORD_LENGTH }} and {{ AppConstants.MAX_PASSWORD_LENGTH }}
+              characters.
+            </div>
+            <div *ngIf="passwordInput.errors?.['pattern']" class="alert alert-danger">
+              Password must contain letters, numbers, and special characters.
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="repeatPassword" class="form-label">Repeat Password</label>
+          <input type="password" id="repeatPassword" name="repeatPassword" [(ngModel)]="repeatPassword"
+                 class="form-control"
+                 required #repeatPasswordInput="ngModel" [minlength]="AppConstants.MIN_PASSWORD_LENGTH"
+                 [maxlength]="AppConstants.MAX_PASSWORD_LENGTH" pattern="[\w!@#$%^&*()-+=]+">
+          <div
+            *ngIf="submitted && repeatPasswordInput.invalid && (repeatPasswordInput.dirty || repeatPasswordInput.touched)">
+            <div *ngIf="repeatPasswordInput.errors?.['required']" class="alert alert-danger">
+              Password is required.
+            </div>
+            <div *ngIf="repeatPasswordInput.errors?.['minlength']" class="alert alert-danger">
+              Password must be between {{ AppConstants.MIN_PASSWORD_LENGTH }} and {{ AppConstants.MAX_PASSWORD_LENGTH }}
+              characters.
+            </div>
+            <div *ngIf="repeatPasswordInput.errors?.['pattern']" class="alert alert-danger">
+              Password must contain letters, numbers, and special characters.
+            </div>
+          </div>
+          <div *ngIf="submitted && newPassword !== repeatPassword" class="alert alert-danger">
+            Passwords must match.
+          </div>
+        </div>
+        <!--        <div class="mb-3">-->
+        <!--          <label for="role" class="form-label">Role</label>-->
+        <!--          <div *ngFor="let role of roles; let i = index">-->
+        <!--            <input type="radio" id="{{role}}" name="role" [(ngModel)]="selectedRole" [value]="role" required>-->
+        <!--            <label for="{{role}}">{{role}}</label>-->
+        <!--          </div>-->
+        <!--        </div>-->
+
+        <div class="mb-3">
+          <label class="form-label">Role</label>
+          <div *ngFor="let role of roles; let i = index">
+            <!-- Use unique id for each radio button associating it with the corresponding label -->
+            <input type="radio" [id]="'role' + i" name="role" [(ngModel)]="selectedRole" [value]="role" required #roleInput="ngModel">
+            <!-- Fix the label 'for' attribute to match the input 'id' -->
+            <label [for]="'role' + i">{{role}}</label>
+          </div>
+          <!-- Since the #roleInput is within *ngFor, we can't use it outside of its scope. Instead, use a different approach to show error messages. -->
+          <div *ngIf="submitted && !selectedRole" class="alert alert-danger">
+            Role must be picked.
+          </div>
+        </div>
+
+        <div *ngIf="registrationSuccess" class="alert alert-success">Registration successful!</div>
+        <div *ngIf="errorEnabled" class="alert alert-danger">{{error}}</div>
+
+        <button type="submit" class="btn btn-success btn-block">Register</button>
+      </form>
+
+    </div>
+  </div>
+</div>
