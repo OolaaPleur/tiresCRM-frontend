@@ -1,4 +1,5 @@
-export const API_URL = "http://localhost:8080"
+//export const API_URL = "http://localhost:8080"
+export const API_URL = "https://tires-crm-d4e60a26f1d1.herokuapp.com"
 export const AppConstants = {
   MIN_NAME_LENGTH: 8,
   MAX_NAME_LENGTH: 40,
